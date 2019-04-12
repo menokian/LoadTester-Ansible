@@ -1,0 +1,14 @@
+---
+
+# Load testing server
+
+- hosts: LoadTesting
+  roles:
+    - common
+    - kernel-tuning
+    - siege
+    - gatling
+    - jmeter
+    - locust
+    - wrk2
+  vars:

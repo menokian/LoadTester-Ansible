@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# *************************************************
+# chkconfig: 2345 99 99
+# description: notify email address on system boot.
+# *************************************************
+# Installing:
+# 1) save as /etc/rc.d/init.d/notify
+# 2) set the desired email address in "MAILADD" variable
+# 3) chmod a+w /etc/rc.d/init.d/notify
+# 4) /sbin/chkconfig --level 2345 notify on
+
+PATH=/bin:/usr/sbin:/usr/bin:/sbin
+SERVER=`hostname`
+case $1 in
+    start)
+        MAILADD={{ alert_emails }}
+        mail -s " Boot of $SERVER" $MAILADD <<EOF
+$SERVER has booted up.
+If this is news to you, please investigate.
+`date`
+
+IP Info:
+`ip addr show | grep inet`
+EOF
+    ;;
+esac
+exit 0

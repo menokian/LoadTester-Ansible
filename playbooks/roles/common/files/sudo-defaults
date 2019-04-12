@@ -1,0 +1,6 @@
+# Enable additional defaults for security
+
+Defaults mail_no_host
+Defaults mail_no_perms
+Defaults mail_no_user
+Defaults insults

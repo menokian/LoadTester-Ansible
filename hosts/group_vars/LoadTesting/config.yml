@@ -1,0 +1,8 @@
+newrelic_server_role: load testing
+nofile_soft_limit: 16384
+nofile_hard_limit: 65536
+fs_filemax_limit: 65536
+increase_max_socon: true
+increase_max_backlog: true
+increase_os_buffers: true
+improve_os_con_churn: true

@@ -1,0 +1,7 @@
+---
+
+- name: reload sysctl
+  command: sysctl -p
+
+- name: update grub
+  command: update-grub

@@ -1,0 +1,45 @@
+---
+
+- name: Unpack Siege archive
+  unarchive:
+    src: siege-4.0.2.tar.gz
+    dest: /srv
+    creates: /srv/siege-4.0.2/README.md
+
+- name: Install Siege build Requirements
+  apt:
+    name: "{{ siege_requirement_packages }}"
+    state: present
+  vars:
+    siege_requirement_packages:
+      - gcc
+      - make
+      - autoconf
+      - libtool
+      - automake
+      - libssl-dev
+
+- name: Configure Siege build
+  shell: ./configure --with-ssl=/usr/lib/ssl
+  args:
+    chdir: /srv/siege-4.0.2
+    creates: /srv/siege-4.0.2/Makefile
+
+- name: Build Siege
+  shell: make
+  args:
+    chdir: /srv/siege-4.0.2
+    creates: /srv/siege-4.0.2/src/siege
+
+- name: Install Siege
+  shell: make install
+  args:
+    chdir: /srv/siege-4.0.2
+    creates: /usr/local/bin/siege
+
+- name: Copy URL tests
+  copy:
+    src: "{{ item }}"
+    dest: /srv/{{ item }}
+  with_items:
+    - dev-loadtest.txt

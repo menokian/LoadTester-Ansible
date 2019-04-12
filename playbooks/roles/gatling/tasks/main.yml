@@ -1,0 +1,28 @@
+- name: Install requirements
+  apt:
+    name: "{{ gatling_requirement_packages }}"
+    state: present
+  vars:
+    gatling_requirement_packages:
+      - openjdk-8-jre-headless
+      - unzip
+
+- name: Download and Unpack Gatling
+  unarchive:
+    src: "https://repo1.maven.org/maven2/io/gatling/highcharts/gatling-charts-highcharts-bundle/2.2.3/gatling-charts-highcharts-bundle-2.2.3-bundle.zip"
+    dest: /srv/
+    creates: /srv/gatling-charts-highcharts-bundle-2.2.3/LICENSE
+    mode: "u=rwX,g=rwX,o=rX"
+    remote_src: yes
+
+- name: Create dev simulation directory
+  file:
+    dest: /srv/gatling-charts-highcharts-bundle-2.2.3/user-files/simulations/devLoadTesting
+    state: directory
+
+- name: Copy simulations
+  copy:
+    src: "{{ item }}"
+    dest: /srv/gatling-charts-highcharts-bundle-2.2.3/user-files/simulations/devLoadTesting/{{ item }}
+  with_items:
+    - LoadTestingDevBrowseSimulation.scala

@@ -1,0 +1,5 @@
+[dev:children]
+LoadTesting
+
+[LoadTesting]
+LoadTesting.testing.com server_id=101

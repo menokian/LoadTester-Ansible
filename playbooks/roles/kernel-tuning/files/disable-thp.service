@@ -1,0 +1,11 @@
+# !! Ansible managed: This file was created by ansible. Do not modify by hand! Changes will be overwritten.  !!
+[Unit]
+Description=Disable Transparent Huge Pages
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled"
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,13 @@
+https://local.LoadTesting.com:8443/loadtest/catalog_product/view/id/161889?loadtest=1
+https://local.LoadTesting.com:8443/loadtest/checkout_cart/add POST product=161889&super_attribute[92]=952&super_attribute[196]=186&qty=1
+https://local.LoadTesting.com:8443/loadtest/checkout_onepage/
+https://local.LoadTesting.com:8443/loadtest/checkout_onepage/saveMethod POST method=guest
+https://local.LoadTesting.com:8443/loadtest/checkout_onepage/progress/?prevStep=billing
+https://local.LoadTesting.com:8443/loadtest/checkout_onepage/saveBilling/ POST billing[address_id]&billing[firstname]=Bill&billing[middlename]=&billing[lastname]=OReilly&billing[street][]=1926 Arch Street&billing[street][]=&billing[city]=Philadelphia&billing[region_id]=51&billing[region]=&billing[postcode]=19103&billing[country_id]=US&billing[email]=bill@doitlive.com&billing[telephone]=123456789&billing[mobilephone]=123456789&billing[gender]=&billing[customer_password]=&billing[confirm_password]=&billing[save_in_address_book]=1&billing[use_for_shipping]=1
+https://local.LoadTesting.com:8443/loadtest/checkout_onepage/progress/?prevStep=billing
+https://local.LoadTesting.com:8443/loadtest/checkout_onepage/progress/?prevStep=shipping
+https://local.LoadTesting.com:8443/loadtest/checkout_onepage/saveShippingMethod/ POST shipping_method=fedex_SMART_POST
+https://local.LoadTesting.com:8443/loadtest/checkout_onepage/progress/?prevStep=shipping_method
+https://local.LoadTesting.com:8443/loadtest/checkout_onepage/savePayment/ POST payment[method]=authorizenet&payment[token]=payment[token]&payment[cc_type]=VI&payment[cc_number]=4111111111111111&payment[cc_exp_month]=5&payment[cc_exp_year]=2021&payment[cc_cid]=122
+https://local.LoadTesting.com:8443/loadtest/checkout_onepage/progress/?prevStep=payment
+https://local.LoadTesting.com:8443/loadtest/checkout_onepage/saveOrder/form_key/YQQZvvBjXc8RQUkP/ POST payment[method]=authorizenet&payment[token]=payment[token]&payment[cc_type]=VI&payment[cc_number]=4111111111111111&payment[cc_exp_month]=5&payment[cc_exp_year]=2021&payment[cc_cid]=122

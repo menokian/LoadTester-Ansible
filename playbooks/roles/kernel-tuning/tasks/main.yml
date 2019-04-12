@@ -1,0 +1,236 @@
+---
+
+- name: Raise soft nofile limits
+  lineinfile:
+    dest: /etc/security/limits.conf
+    regexp: '^\* soft nofile'
+    line: "* soft nofile {{ nofile_soft_limit }}"
+    state: present
+  when: nofile_soft_limit is defined
+
+- name: Raise hard nofile limits
+  lineinfile:
+    dest: /etc/security/limits.conf
+    regexp: '^\* hard nofile'
+    line: "* hard nofile {{ nofile_hard_limit }}"
+    state: present
+  when: nofile_hard_limit is defined
+
+- name: Ensure nofile limits are enforced for login users
+  lineinfile:
+    dest: /etc/pam.d/common-session
+    regexp: "^session required pam_limits.so"
+    line: "session required pam_limits.so"
+    state: present
+  when: nofile_soft_limit is defined or nofile_hard_limit is defined
+
+- name: Ensure nofile limits are enforced for nonlogin users
+  lineinfile:
+    dest: /etc/pam.d/common-session-noninteractive
+    regexp: "^session required pam_limits.so"
+    line: "session required pam_limits.so"
+    state: present
+  when: nofile_soft_limit is defined or nofile_hard_limit is defined
+
+- name: Raise fs.file-max limits
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^fs.file-max"
+    line: "fs.file-max = {{ fs_filemax_limit }}"
+    state: present
+  when: fs_filemax_limit is defined
+  notify: reload sysctl
+
+- name: Increase max socket connections
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.core.somaxconn"
+    line: "net.core.somaxconn = 10240"
+    state: present
+  when: increase_max_socon is defined and increase_max_socon == true
+  notify: reload sysctl
+
+- name: Increase max packet backlog
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.core.netdev_max_backlog"
+    line: "net.core.netdev_max_backlog = 32768"
+    state: present
+  when: increase_max_backlog is defined and increase_max_backlog == true
+  notify: reload sysctl
+
+- name: Increase max OS receive buffer
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.core.rmem_max"
+    line: "net.core.rmem_max = 33554432"
+    state: present
+  when: increase_os_buffers is defined and increase_os_buffers == true
+  notify: reload sysctl
+
+- name: Increase max OS transmit buffer
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.core.wmem_max"
+    line: "net.core.wmem_max = 33554432"
+    state: present
+  when: increase_os_buffers is defined and increase_os_buffers == true
+  notify: reload sysctl
+
+- name: Increase max TCP memory usage
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_mem"
+    line: "net.ipv4.tcp_mem = 4096 87380 33554432"
+    state: present
+  when: increase_os_buffers is defined and increase_os_buffers == true
+  notify: reload sysctl
+
+- name: Increase max TCP receive buffer
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_rmem"
+    line: "net.ipv4.tcp_rmem = 4096 87380 33554432"
+    state: present
+  when: increase_os_buffers is defined and increase_os_buffers == true
+  notify: reload sysctl
+
+- name: Increase max TCP transmit buffer
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_wmem"
+    line: "net.ipv4.tcp_wmem = 4096 87380 33554432"
+    state: present
+  when: increase_os_buffers is defined and increase_os_buffers == true
+  notify: reload sysctl
+
+- name: Allow reusing TIME_WAIT connections
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_tw_reuse"
+    line: "net.ipv4.tcp_tw_reuse = 1"
+    state: present
+  when: improve_os_con_churn is defined and improve_os_con_churn == true
+  notify: reload sysctl
+
+- name: Decrease TCP FIN timeout
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_fin_timeout"
+    line: "net.ipv4.tcp_fin_timeout = 10"
+    state: present
+  when: improve_os_con_churn is defined and improve_os_con_churn == true
+  notify: reload sysctl
+
+- name: Decrease keepalive time wait
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_keepalive_time"
+    line: "net.ipv4.tcp_keepalive_time = 60"
+    state: present
+  when: improve_os_con_churn is defined and improve_os_con_churn == true
+  notify: reload sysctl
+
+- name: Decrease keepalive probe interval
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_keepalive_intvl"
+    line: "net.ipv4.tcp_keepalive_intvl = 15"
+    state: present
+  when: improve_os_con_churn is defined and improve_os_con_churn == true
+  notify: reload sysctl
+
+- name: Decrease max keepalive probes
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_keepalive_probes"
+    line: "net.ipv4.tcp_keepalive_probes = 4"
+    state: present
+  when: improve_os_con_churn is defined and improve_os_con_churn == true
+  notify: reload sysctl
+
+- name: Increase max timewait buckets
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_max_tw_buckets"
+    line: "net.ipv4.tcp_max_tw_buckets = 524288"
+    state: present
+  when: improve_os_con_churn is defined and improve_os_con_churn == true
+  notify: reload sysctl
+
+- name: Disable TCP slow start after idle
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_slow_start_after_idle"
+    line: "net.ipv4.tcp_slow_start_after_idle = 0"
+    state: present
+  when: improve_os_con_churn is defined and improve_os_con_churn == true
+  notify: reload sysctl
+
+- name: Increase max TCP SYN backlog
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_max_syn_backlog"
+    line: "net.ipv4.tcp_max_syn_backlog = 10240"
+    state: present
+  when: improve_os_con_churn is defined and improve_os_con_churn == true
+  notify: reload sysctl
+
+- name: Enable TCP syncookies
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_syncookies"
+    line: "net.ipv4.tcp_syncookies = 1"
+    state: present
+  when: web_server is defined and web_server == true
+  notify: reload sysctl
+
+- name: Enable MTU Probing
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^net.ipv4.tcp_mtu_probing"
+    line: "net.ipv4.tcp_mtu_probing = 1"
+    state: present
+  when: web_server is defined and web_server == true
+  notify: reload sysctl
+
+- name: Decrease virtual memory swappiness
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "^vm.swappiness"
+    line: "vm.swappiness = 10"
+    state: present
+  notify: reload sysctl
+
+- name: Check current state of transparent huge pages
+  command: "cat /sys/kernel/mm/transparent_hugepage/enabled"
+  register: current_thp
+  when: disable_thp is defined and disable_thp == true
+  changed_when: "'[never]' not in current_thp.stdout"
+
+- name: Disable transparent huge pages
+  shell: echo never > /sys/kernel/mm/transparent_hugepage/enabled
+  when: disable_thp is defined and disable_thp == true and '[never]' not in current_thp.stdout
+
+- name: Disable transparent huge pages on boot
+  lineinfile:
+    dest: /etc/default/grub
+    regexp: "^GRUB_CMDLINE_LINUX_DEFAULT"
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="splash quiet transparent_hugepage=never"'
+    state: present
+  when: disable_thp is defined and disable_thp == true
+  notify: update grub
+
+- name: Copy disable-thp service file
+  copy:
+    src: disable-thp.service
+    dest: /lib/systemd/system/disable-thp.service
+    mode: 0644
+  when: disable_thp is defined and disable_thp == true
+
+- name: Start and enable disable-thp service
+  service:
+    name: disable-thp
+    state: started
+    enabled: yes
+  when: disable_thp is defined and disable_thp == true

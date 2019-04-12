@@ -1,0 +1,24 @@
+env: dev
+environment_full: development
+env_branch_name: develop
+env_web: dev.
+env_web_expanded: dev.
+env_prefix: dev-
+domain_name: dev-testing.com
+smtp_server: 127.0.0.1
+
+alert_emails: webops-alerts@testing.com
+cron_emails: "{{ alert_emails }}"
+
+enable_real_ip: true
+# calculation= 1 child per 150MB of memory due to max RSS per process and other processes
+
+dns_forwarders:
+  #- for project purposes we dont have a dns forwarder we are going to focus solely on load testing
+
+dns_master_ipv4: 8.8.8.8
+dns_slave_ipv4: 1.1.1.1
+
+internal_ca_certificates:
+  - filename: LoadTestingGlobalCA
+    certificate: "{{ loadtesting.ca }}"

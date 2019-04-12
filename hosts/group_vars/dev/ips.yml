@@ -1,0 +1,5 @@
+# Servers IPv4
+LoadTesting_private_ipv4: 127.0.0.1
+
+# Servers IPv6
+LoadTesting_private_ipv6: ::1/128

@@ -1,0 +1,25 @@
+---
+
+- name: Install wrk2 build Requirements
+  apt:
+    name: "{{ wrk2_requirement_packages }}"
+    state: present
+  vars:
+    wrk2_requirement_packages:
+      - gcc
+      - make
+      - autoconf
+      - libtool
+      - automake
+      - libssl-dev
+
+- name: Download wrk2
+  git:
+    repo: https://github.com/giltene/wrk2.git
+    dest: /srv/wrk2
+
+- name: Build wrk2
+  shell: make
+  args:
+    chdir: /srv/wrk2
+    creates: /srv/wrk2/wrk

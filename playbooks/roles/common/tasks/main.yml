@@ -1,0 +1,91 @@
+---
+# This is the common configuration file for all hosts
+
+# Tasks
+
+- name: Install general utilities
+  apt:
+    name: "{{ common_general_packages }}"
+    state: present
+  vars:
+    common_general_packages:
+      - vim # Better vi text editor
+      - tmux   # Terminal multiplexer for extended sessions
+      - update-notifier #  Allow checking for updates
+      - whois # For whois and mkpasswd
+      - pv # Pipe Viewer
+      - bc # For bash math calculations
+      - landscape-common # For system information upon ssh login
+      - haveged # For better entropy
+
+- name: Install Bat software
+  apt:
+    deb: https://github.com/sharkdp/bat/releases/download/v0.7.1/bat-musl_0.7.1_amd64.deb
+
+- name: Setup bash idle timeout
+  copy:
+    src: timeout.sh
+    dest: /etc/profile.d/timeout.sh
+
+- name: Template boot notify script
+  template:
+    src: boot-notify.sh.j2
+    dest: /usr/local/sbin/boot-notify.sh
+    mode: "0755"
+
+- name: Set crontab for boot notify
+  cron:
+    cron_file: "boot-notify"
+    name: "boot-notify"
+    special_time: "reboot"
+    user: root
+    job: "/usr/local/sbin/boot-notify.sh start"
+    state: "present"
+
+- name: Remove old time to send update notifications
+  lineinfile:
+    dest: /etc/cron.d/apticron
+    regexp: '^[0-9]+ \* \* \* \* root if test'
+    state: absent
+
+- name: Set time to send update notifications
+  cron:
+    cron_file: apticron
+    name: Update notifications
+    minute: "0"
+    hour: "15"
+    day: "*"
+    month: "*"
+    weekday: "4"
+    user: "root"
+    job: "if test -x /usr/sbin/apticron; then /usr/sbin/apticron --cron; else true; fi"
+    state: "present"
+
+- name: Disable unattended upgrades
+  copy:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+
+- name: Copy sudoers file for additional security defaults
+  copy:
+    src: sudo-defaults
+    dest: /etc/sudoers.d/sudo-defaults
+    validate: 'visudo -cf %s'
+
+- name: Copy bashrc for prompt improvements
+  copy:
+    src: bashrc
+    dest: /etc/skel/.bashrc
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Remove documentation text from ssh login
+  file:
+    path: /etc/update-motd.d/10-help-text
+    state: absent
+
+- name: Remove cloud text from ssh login
+  file:
+    path: /etc/update-motd.d/51-cloudguest
+    state: absent
